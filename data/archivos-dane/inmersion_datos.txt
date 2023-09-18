@@ -1,0 +1,65 @@
+**AULA 3**
+
+Vamos a traer datos estadísticos de la ciudad de Bogotá, directamente del DANE y vamos a ver como estos datos nos ayudarían en inclusión de nuevas variables para el cálculo del precio de los inmuebles en la ciudad de Bogotá.
+
+Encuesta Multiproposito de Bogotá para obtener información socio-económica y de entorno urbano de los habitantes de Bogotá para la formulación, seguimiento y evaluación de las políticas distritales.
+
+https://microdatos.dane.gov.co/index.php/catalog/743
+
+----------------------------------
+
+**AULA 4**
+
+dic_dane = {
+       'NVCBP4':'CONJUNTO_CERRADO',
+       'NVCBP14A':'FABRICAS_CERCA', 'NVCBP14D':'TERMINALES_BUS', 'NVCBP14E':'BARES_DISCO', 
+       'NVCBP14G':'OSCURO_PELIGROSO', 'NVCBP15A':'RUIDO', 'NVCBP15C':'INSEGURIDAD',
+       'NVCBP15F':'BASURA_INADECUADA', 'NVCBP15G':'INVASION','NVCBP16A3':'MOV_ADULTOS_MAYORES', 
+       'NVCBP16A4':'MOV_NINOS_BEBES',
+       'NPCKP17':'OCUPACION','NPCKP18':'CONTRATO','NPCKP23':'SALARIO_MES', 
+       'NPCKP44A':'DONDE_TRABAJA', 'NPCKPN62A':'DECLARACION_RENTA', 
+       'NPCKPN62B':'VALOR_DECLARACION', 'NPCKP64A':'PERDIDA_TRABAJO_C19', 
+       'NPCKP64E':'PERDIDA_INGRESOS_C19',
+       'NHCCP3':'TIENE_ESCRITURA', 'NHCCP6':'ANO_COMPRA', 'NHCCP7':'VALOR_COMPRA', 'NHCCP8_1':'HIPOTECA_CRED_BANCO',
+       'NHCCP8_2':'OTRO_CRED_BANCO', 'NHCCP8_3':'CRED_FNA', 'NHCCP8_6':'PRESTAMOS_AMIGOS',
+       'NHCCP8_7':'CESANTIAS', 'NHCCP8_8':'AHORROS', 'NHCCP8_9':'SUBSIDIOS',
+       'NHCCP9':'CUANTO_PAGARIA_MENSUAL', 'NHCCP11':'PLANES_ADQUIRIR_VIVIENDA', 
+       'NHCCP11A':'MOTIVO_COMPRA', 'NHCCP12':'RAZON_NO_ADQ_VIV', 'NHCCP41':'TIENE_CARRO','NHCCP41A':'CUANTOS_CARROS',
+       'NHCCP47A':'TIENE_PERROS', 'NHCCP47B':'TIENE_GATOS', 'NHCLP2A':'VICTIMA_ATRACO', 'NHCLP2B':'VICTIMA_HOMICIDIO', 
+       'NHCLP2C':'VICTIMA_PERSECUSION',
+       'NHCLP2E':'VICTIMA_ACOSO', 'NHCLP4':'COMO_VIVE_ECON', 'NHCLP5':'COMO_NIVEL_VIDA', 
+       'NHCLP8AB':'REACCION_OPORTUNA_POLICIA', 'NHCLP8AE':'COMO_TRANSPORTE_URBANO', 'NHCLP10':'SON_INGRESOS_SUFICIENTES',
+       'NHCLP11':'SE_CONSIDERA_POBRE', 'NHCLP29_1A':'MED_C19_TRABAJO', 
+       'NHCLP29_1C':'MED_C19_CAMBIO_VIVIENDA', 'NHCLP29_1E':'MED_C19_ENDEUDAMIENTO', 
+       'NHCLP29_1F':'MED_C19_VENTA_BIENES','NPCHP4':'NIVEL_EDUCATIVO'
+       }
+
+datos_dane = datos_dane.rename(columns=dic_dane)
+datos_dane.columns
+
+datos_dane.groupby('NOMBRE_ESTRATO')[['CONJUNTO_CERRADO','INSEGURIDAD','TERMINALES_BUS','BARES_DISCO','RUIDO','OSCURO_PELIGROSO','SALARIO_MES','TIENE_ESCRITURA','PERDIDA_TRABAJO_C19','PERDIDA_INGRESOS_C19','PLANES_ADQUIRIR_VIVIENDA']].mean().head()
+
+plt.figure(figsize=(18, 8))
+#https://www.tylervigen.com/spurious-correlations
+#mascara = np.triu(np.ones_like(datos_ml.corr(), dtype=bool)) mask=mascara,
+heatmap = sns.heatmap(datos_ml.corr(), vmin=-1, vmax=1, annot=True, cmap='BrBG')
+heatmap.set_title('Correlación de las variables', fontdict={'fontsize':18}, pad=16);
+
+---------------
+
+
+X = datos_ml[['COD_UPZ_GRUPO','Habitaciones','Banos']] #,'CONJUNTO_CERRADO','SALARIO_ANUAL_MI','TIENE_ESCRITURA'
+
+Y = datos_ml["Precio_Millon"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 99)
+modelo_1 = LinearRegression()
+modelo_1.fit(X_train, y_train)
+y_predict_test = modelo_1.predict(X_test)
+y_predict_train = modelo_1.predict(X_train)
+mae_test = mean_absolute_error(y_test, y_predict_test)
+r2_test = r2_score(y_test, y_predict_test)
+mae_train = mean_absolute_error(y_train, y_predict_train)
+r2_train = r2_score(y_train, y_predict_train)
+print(mae_test,r2_test)
+print(mae_train,r2_train)
