@@ -1,4 +1,4 @@
-# Resolution of Challenges of the First Course of Alura Latam's Data Immersion Week
+# Resolution of Challenges of Alura Latam's Data Immersion Week First Course
 
 At the end of the first class in the Data Immersion Week with Alura Latam, the instructors left the following two challenges:
 
